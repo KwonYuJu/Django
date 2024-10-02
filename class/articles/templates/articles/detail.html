@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Detail</h2>
+  <h3>{{ article.pk }}번째 게시글</h3>
+
+  <hr>
+
+  <p>제목 : {{ article.title }}</p>
+  <p>내용 : {{ article.content }}</p>
+  <p>작성일 : {{ article.created_at }}</p>
+  <p>수정일 : {{ article.updated_at }}</p>
+
+  {% comment %} image는 있을 수도 있고, 없을 수도 있다. DTL의 조건문 사용 {% endcomment %}
+  {% if article.image %}
+    {% comment %} src에는 업로드된 이미지의 URL을 넣어야 한다. {% endcomment %}
+    <img src="{{ article.image.url }}" alt="mudo">
+  {% endif %}
+  <hr>
+
+  <a href="{% url "articles:update" article.pk %}">수정</a>
+  <p></p>
+
+  <form action="{% url "articles:delete" article.pk %}" method="POST">
+    {% csrf_token %}
+    {% comment %} value는 초기값 초기 페이지에 뜨는 글을 삭제로 하겠다 {% endcomment %}
+    <input type="submit" value="삭제">
+  </form>
+
+  <br>
+
+  {% comment %} url naming pattern {% endcomment %}
+  <a href="{% url "articles:index" %}">Home</a>
+
+{% endblock content %}
+

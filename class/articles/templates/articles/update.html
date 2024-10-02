@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Edit</h1>
+{% comment %} variable routing -> article.pk {% endcomment %}
+<form action="{% url "articles:update" article.pk %}" method="POST" enctype="multipart/form-data”>
+  {% comment %} csrf 토큰 : 보안 토큰(POST 방식) {% endcomment %}
+  {% csrf_token %}
+  {{ form.as_p }}
+  
+  {% comment %} for="title"과 id="title"이 연관 {% endcomment %}
+  {% comment %} name="title"과 urls의 request.POST.get('title')이 연관 {% endcomment %}
+  {% comment %} 초기글(content) DTL {% endcomment %}
+  {% comment %} 
+  <div> 
+    <label for="title">Title : </label>
+    <input type="text" name="title" id="title" value="{{ article.title }}">
+  </div>
+  <br>
+  <div> 
+    <label for="content">Content : </label>
+    
+    <textarea name="content" id="content" cols="30" rows="10">{{ article.content }}</textarea>
+  </div> 
+  {% endcomment %}
+  <br>
+  <input type="submit">
+
+</form>
+<br>
+<a href="{% url "articles:index" %}">Home</a>
+
+{% endblock content %}
+

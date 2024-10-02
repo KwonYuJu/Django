@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>메인 페이지</h1>
+{% for movie in movies %}
+  <div class="card">
+    <div class="card-header">
+      {{ movie.title }}
+    </div>
+    <div class="card-body">
+      <p class="card-text">{{ movie.content }}</p>
+      <a href="{% url "movies:detail" movie.pk %}" class="btn btn-primary">Detail</a>
+    </div>
+  </div>
+{% endfor %}
+{% endblock content %}

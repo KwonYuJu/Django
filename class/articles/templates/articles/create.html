@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>게시글 생성</h1>
+  {% comment %} 
+  form 태그로 POST방식으로 보낸 게
+  1. urls의 create
+  2. views.py create 함수의 request 
+  {% endcomment %}
+
+  {% comment %} enctype="multipart/form-data" -> 폼 데이터와 함꼐 파일(이미지, 문서 ..)을 서버네 전송할 수 있다. {% endcomment %}
+  <form action="{% url "articles:create" %}" method="POST" enctype="multipart/form-data">
+    {% comment %} csrf 토큰 : 보안 토큰(POST 방식) {% endcomment %}
+    {% csrf_token %}
+    {{ form.as_p }}
+    
+    {% comment %} for="title"과 id="title"이 연관 {% endcomment %}
+    {% comment %} name="title"과 urls의 request.POST.get('title')이 연관 {% endcomment %}
+    {% comment %} 
+    <div> 
+      <label for="title">Title : </label>
+      <input type="text" name="title" id="title">
+    </div>
+    <br>
+    <div> 
+      <label for="content">Content : </label>
+      <textarea name="content" id="content" cols="30" rows="10"></textarea>
+    </div> 
+    {% endcomment %}
+  
+    <br>
+    <input type="submit">
+
+  </form>
+
+{% endblock content %}
+{% comment %} hi {% endcomment %}
