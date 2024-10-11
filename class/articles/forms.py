@@ -1,5 +1,5 @@
 from django import forms
-from .models import Article
+from .models import Article, Comment
 
 # form 태그, django ModelForm의 차이?
 # 사용자로부터 입력 받은 데이터를 DB에 저장하는지 안하는지?
@@ -12,6 +12,10 @@ class ArticleForm(forms.ModelForm):
   class Meta:
     model = Article
     # fields = ('title', 'content', 'created_at', 'updated_at', 'image',)
-    fields = '__all__'
+    # fields = '__all__'
+    fields = ('title', 'content', )
 
-    
+class CommentForm(forms.ModelForm):
+  class Meta:
+    model = Comment
+    fields = ('content', )

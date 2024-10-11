@@ -25,5 +25,11 @@ urlpatterns = [
     # 게시글 수정
     # 페이지를 렌더링 + 리다이렉트
     path('<int:pk>/update/', views.update, name='update'),
+
+    # 댓글 생성 url
+    path('<int:pk>/comments/', views.comments_create, name='comments_create'),
+    # 댓글 삭제
+    path('<int:article_pk>/comments/<int:comment_pk>/delete/',
+         views.comments_delete, name = 'comments_delete'),
 ]
 

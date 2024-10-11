@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-# 현재 디렉토리의 models.py로부터 Article 모델을 가져오겠다.
-from .models import Article
-from .forms import ArticleForm
+from django.contrib.auth.decorators import login_required
+# 현재 디렉토리의 models.py로부터 Article, Comment 모델을 가져오겠다.
+from .models import Article, Comment
+from .forms import ArticleForm, CommentForm
 
 def index(request):
   # QuerySet API -> 전체 데이터 조회 : Article.objects.all()
@@ -17,8 +18,16 @@ def index(request):
 def detail(request, pk):
   # QuerySet API -> 단일 데이터 조회 : get
   article = Article.objects.get(pk=pk)
+  comment_form = CommentForm()
+
+  # comment_set -> 역참조
+  # 게시글에 달린 모든 댓글을 가져오기 위해서 (역참조)
+  comments = article.comment_set.all()
+
   context = {
     'article' : article,
+    'comment_form' : comment_form,
+    'comments' : comments,
   }
   return render(request, 'articles/detail.html', context)
 
@@ -52,6 +61,7 @@ def create(request):
   return redirect('articles:detail', article.pk)
 '''
 
+@login_required
 def create(request):
   # 게시글 생성 버튼을 눌렀을 때
   if request.method == 'POST':
@@ -60,7 +70,12 @@ def create(request):
     # 1. 모든 필수 필드가 채워져 있는지
     # 2. 입력된 데이터가 필드의 조건(ex. 데이터 형식)을 만족 하는지
     if form.is_valid():
-      article = form.save()
+      # 바로 DB에 자동으로 저장됨 -> request.user 정보(수동으로 저장) 
+      # -> (commit=False)
+      article = form.save(commit=False)
+      # request.user -> 로그인한 사용자
+      article.user = request.user
+      article.save() # 최종적으로 DB에 저장
       # create 함수 부분(데이터가 변경됨)
       return redirect('articles:detail', article.pk)
 
@@ -78,9 +93,14 @@ def create(request):
 # 게시글 삭제
 # 단일 게시글 조회 후 삭제
 # 데이터 변경 -> redirect
+@login_required
 def delete(request, pk):
   article = Article.objects.get(pk=pk)
-  article.delete()
+  # request.user : 로그인한 사용자
+  # article.user : 게시글 작성자
+  # 로그인한 사용자랑 게시글 작성자랑 같을 때만 삭제할 수 있다
+  if request.user == article.user: 
+    article.delete()
   # 여기서 request는 POST 방식 -> DB 변경하니까
   return redirect('articles:index')
 
@@ -107,18 +127,24 @@ def update(request, pk):
 '''
 
 # 단일 게시글 조회하고 변경, 저장
+@login_required
 def update(request, pk):
   # 조회 먼저 하고
   article = Article.objects.get(pk=pk)
-  if request.method == 'POST':
-    # 기존 게시글의 데이터를 미리 채운다(instance=article)
-    form = ArticleForm(request.POST, request.FILES , instance=article)
-    if form.is_valid():
-      form.save()
-      return redirect('articles:detail', article.pk)
-  # 변경 버튼 누르기 전 또는 다른 버튼 눌렀을 때
+  # 로그인한 사용자랑 게시글 작성자랑 같을 때만 수정할 수 있다
+  if request.user == article.user:
+    if request.method == 'POST':
+      # 기존 게시글의 데이터를 미리 채운다(instance=article)
+      form = ArticleForm(request.POST, request.FILES , instance=article)
+      if form.is_valid():
+        form.save()
+        return redirect('articles:detail', article.pk)
+    # 변경 버튼 누르기 전 또는 다른 버튼 눌렀을 때
+    else:
+      form = ArticleForm(instance=article)
   else:
-    form = ArticleForm(instance=article)
+    return redirect('articles:index')
+
   context = {
     # article은 기존에 존재했던 데이터
     'article': article,
@@ -126,3 +152,32 @@ def update(request, pk):
   }
   return render(request, 'articles/update.html', context)
 
+# 댓글 생성
+@login_required
+def comments_create(request, pk):
+  # 게시글 조회
+  article = Article.objects.get(pk=pk)
+  comment_form = CommentForm(request.POST)
+  # 댓글 유효성 검사
+  if comment_form.is_valid():
+    # 댓글을 바로 DB에 저장? -> 2개 수동으로 저장
+    comment = comment_form.save(commit=False)
+    comment.article = article # 첫 번째 : 게시글의 외래키
+    comment.user = request.user # 두 번째 : 로그인한 사용자(request.user)
+    comment.save()  # DB에 수동으로 저장
+    return redirect('articles:detail', article.pk)
+  # 유효성 검사에 실패했으면
+  context = {
+    'article' : article,
+    'comment_form' : comment_form,
+  }
+  return render(request, 'articles/detail.html', context)
+
+# 댓글 삭제
+@login_required
+def comments_delete(request, article_pk, comment_pk):
+  comment = Comment.objects.get(pk=comment_pk)
+  if request.user == comment.user:
+    comment.delete()
+
+  return redirect('articles:detail', article_pk)
