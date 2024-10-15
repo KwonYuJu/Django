@@ -109,3 +109,35 @@ def change_password(request, user_pk):
     'form' : form,
   }
   return render(request, 'accounts/change_password.html', context)
+
+
+from django.contrib.auth import get_user_model
+# get_user_model() : 로그인한 사용자 모델()
+# -> 프로젝트에 활성화 되어있는 모든 사용자 모델
+
+def profile(request, username):
+  User = get_user_model()
+  # person : 게시글 작성한 개인 사용자, 반드시 로그인한 사용자일 필요는 없음
+  person = User.objects.get(username=username)
+  context = {
+    'person' : person
+  }
+  return render(request, 'accounts/profile.html', context)
+
+@login_required
+def follow(request, user_pk):
+  User = get_user_model()
+  # person : user_pk로 팔로우 하려는 상대방
+  person = User.objects.get(pk=user_pk)
+  # 자기자신을 팔로우 하는 것을 방지
+  if person != request.user:
+    # 로그인한 사용자가 이미 팔로잉을 하고 있는지 확인
+    # filter.exists() : 데이터 베이스에 존재하는지 여부 확인 -> True / False
+    if person.followers.filter(pk=request.user.pk).exists():
+      # 팔로우 취소
+      person.followers.remove(request.user)
+    else:
+      # 팔로잉
+      person.followers.add(request.user)
+  # 팔로우/언팔로우 후 DB 변경 -> 페이지 랜더링 x / 리다이렉트
+  return redirect('accounts:profile', person.username)

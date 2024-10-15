@@ -13,4 +13,6 @@ urlpatterns = [
    path('signup/', views.signup, name = 'signup'), # 회원 가입
    path('delete/', views.delete, name = 'delete'), # 회원 탈퇴
    path('update/', views.update, name = 'update'), # 회원 정보 변경
+   path('profile/<username>/', views.profile, name='profile'), # 개인 프로필
+   path('<int:user_pk>/follow/', views.follow, name='follow'), # 팔로잉 하기
 ]

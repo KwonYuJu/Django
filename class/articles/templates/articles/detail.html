@@ -38,6 +38,7 @@
         {% if request.user == comment.user %}
           <form action="{% url "articles:comments_delete" article.pk comment.pk %}" method="POST">
             {% csrf_token %}
+            <br>
             <input type="submit" value="삭제">
           </form>
         {% endif %}
@@ -53,6 +54,7 @@
     <input type="submit">
   </form>
   {% comment %} url naming pattern {% endcomment %}
+  <br>
   <a href="{% url "articles:index" %}">Home</a>
 
 {% endblock content %}

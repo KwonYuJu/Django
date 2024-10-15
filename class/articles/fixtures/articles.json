@@ -1,0 +1,32 @@
+[
+{
+    "model": "articles.article",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "title": "sfsf",
+        "content": "sfsdf",
+        "image": "",
+        "created_at": "2024-10-11T05:49:00.058Z",
+        "updated_at": "2024-10-11T05:49:00.058Z",
+        "like_users": [
+            2
+        ]
+    }
+},
+{
+    "model": "articles.article",
+    "pk": 2,
+    "fields": {
+        "user": 2,
+        "title": "오늘은 화요일",
+        "content": "내일은 수요일",
+        "image": "",
+        "created_at": "2024-10-15T05:38:44.394Z",
+        "updated_at": "2024-10-15T05:38:44.394Z",
+        "like_users": [
+            2
+        ]
+    }
+}
+]

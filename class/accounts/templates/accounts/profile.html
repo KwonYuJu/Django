@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ person.username }}님의 프로필</h1>
+  <div>
+    <div>
+      팔로잉 : {{ person.followings.all|length }} / 팔로워 : {{ person.followers.all|length }}
+    </div>
+    <br>
+    {% comment %} request.user : 로그인한 사용자, person : 프로필 소유자 {% endcomment %}
+    {% if request.user != person %}
+      <div>
+        <form action="{% url "accounts:follow" person.pk %}" method="POST">
+          {% csrf_token %}
+          {% comment %} 로그인한 사용자가 게시글의 소유자를 팔로우 하고 있는지 확인 {% endcomment %}
+          {% if request.user in person.followers.all %}
+            <input type="submit" value="언팔로우">
+          {% else %}
+            <input type="submit" value="팔로우"> 
+          {% endif %}
+        </form>
+      </div>
+    {% endif %}
+  </div>
+  <br>
+  
+  {% comment %} user의 외래키를 article과 comment가 갖고 있다. {% endcomment %}
+  {% comment %} -> article을 가져오려면 역참조를 해야함 {% endcomment %}
+  <h2>{{ person.username }}이 작성한 게시글</h2>
+  {% for article in person.article_set.all %}
+    <div>{{ article.title }}</div>
+  {% endfor %}
+  <hr>
+
+  <h2>{{ person.username }}이 작성한 댓글</h2>
+  {% for comment in person.comment_set.all %}
+    <div>{{ comment.content }}</div>
+  {% endfor %}
+  <hr>
+
+  <h2>{{ person.username }}이 좋아요 한 게시글</h2>
+  {% for article in person.like_articles.all %}
+    <div>{{ article.title }}</div>
+  {% endfor %}
+  <hr>
+
+{% endblock content %}

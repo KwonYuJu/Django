@@ -1,12 +1,18 @@
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
 class Article(models.Model):
   # settings.py의 사용자 모델을 참조
   # on_delete=models.CASCADE -> 연결된 사용자가 삭제되면 게시글도 함께 삭제
   # 사용자와 게시글의 관계 (Many-to-one)
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  # M:N관계
+  # artice_set으로 접근하게되면 충돌 발생 그래서 related_name='like_articles'를 지정
+  # User에서 작성한 게시글들 : user.article_set
+  # User에서 좋아요 누른 게시글들 : user.like_articles
+  like_users = models.ManyToManyField(
+    settings.AUTH_USER_MODEL, related_name='like_articles'
+  )
   title = models.CharField(max_length=20)
   content = models.TextField()
   image = models.ImageField(blank=True)
