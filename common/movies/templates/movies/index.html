@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<br>
 <h1>INDEX PAGE</h1>
+<br>
 {% for movie in movies %}
   <div class="card">
     <div class="card-header">
@@ -10,7 +12,17 @@
     <div class="card-body">
       <p class="card-text">{{ movie.content }}</p>
       <a href="{% url "movies:detail" movie.pk %}" class="btn btn-primary">Detail</a>
+      <form action="{% url "movies:likes" movie.pk%}" method="POST" class="d-inline-block ms-2">
+        {% csrf_token %}
+        {% comment %} 만약 좋아요를 이미 눌렀다면 {% endcomment %}
+        {% if request.user in movie.like_users.all %}
+          <input type="submit" value="좋아요 취소" class="btn btn-outline-primary">
+        {% else %}
+          <input type="submit" value="좋아요" class="btn btn-outline-primary">
+        {% endif %}
+      </form>
     </div>
   </div>
+  <br>
 {% endfor %}
 {% endblock content %}

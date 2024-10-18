@@ -40,12 +40,11 @@ def login(request):
     return render(request, 'accounts/login.html', context)
 
 # 로그아웃
+@login_required
 @require_POST
 def logout(request):
-    if request.method == 'POST':
-        auth_logout(request)
-        return redirect('movies:index')
-    return redirect('accounts:login')
+    auth_logout(request)
+    return redirect('movies:index')
 
 # 회원가입
 @require_http_methods(['GET', 'POST'])
@@ -105,3 +104,30 @@ def change_password(request, user_pk):
         'form' : form,
     }
     return render(request, 'accounts/change_password.html', context)
+
+
+from django.contrib.auth import get_user_model
+
+# 개인 프로필
+@login_required
+@require_http_methods(['GET', 'POST'])
+def profile(request, username):
+  User = get_user_model()
+  person = User.objects.get(username=username)
+  context = {
+    'person' : person
+  }
+  return render(request, 'accounts/profile.html', context)
+
+# 팔로잉
+@login_required
+@require_POST
+def follow(request, user_pk):
+  User = get_user_model()
+  person = User.objects.get(pk=user_pk)
+  if person != request.user:
+    if person.followers.filter(pk=request.user.pk).exists():
+      person.followers.remove(request.user)
+    else:
+      person.followers.add(request.user)
+  return redirect('accounts:profile', person.username)

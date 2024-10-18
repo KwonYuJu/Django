@@ -9,7 +9,7 @@
 <body>
   <nav class="navbar bg-dark navbar-expand-lg bg-body-tertiary" data-bs-theme='dark'>
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">SSAFY</a>
+      <a class="navbar-brand" href="#">MOVIE</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -22,13 +22,13 @@
               <a class="nav-link active" aria-current="page" href="{% url "movies:index" %}">INDEX</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url "movies:create" %}">CREATE</a>
+              <a class="nav-link" href="{% url "movies:create" %}">영화 등록</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url "accounts:update" %}">회원정보 수정</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url "change_password" user.pk %}">비밀번호 변경</a>
+              <a class="nav-link" href="{% url "accounts:profile" user.username %}">프로필</a>
             </li>
             <li class="nav-item">
               <form action="{% url "accounts:logout" %}" method="POST">
